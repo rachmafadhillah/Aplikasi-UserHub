@@ -12,16 +12,25 @@ class MainViewModel(private val userRepository: UserRepository) : ViewModel() {
 
     private val _searchQuery = MutableLiveData<String>()
 
+    private val _sortOrder = MutableLiveData<Int>(0)
 
     val userResult: LiveData<Result<List<UserEntity>>> = _searchQuery.switchMap { query ->
-        if (query.isNullOrEmpty()) {
-            userRepository.getUsers()
-        } else {
-            userRepository.searchLocalUsers(query)
+        _sortOrder.switchMap { sortCode ->
+            if (query.isNullOrEmpty()) {
+                userRepository.searchAndSortLocalUsers("", sortCode)
+            } else {
+                userRepository.searchAndSortLocalUsers(query, sortCode)
+            }
         }
     }
 
     fun setSearchQuery(query: String) {
         _searchQuery.value = query
     }
+
+    fun setSortOrder(sortCode: Int) {
+        _sortOrder.value = sortCode
+    }
+
+    fun refreshUsers() = userRepository.getUsers()
 }

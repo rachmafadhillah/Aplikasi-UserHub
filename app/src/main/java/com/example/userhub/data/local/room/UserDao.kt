@@ -17,4 +17,14 @@ interface UserDao {
 
     @Query("SELECT * FROM user WHERE name LIKE :searchQuery")
     fun searchUsers(searchQuery: String): LiveData<List<UserEntity>>
+
+    @Query("""
+    SELECT * FROM user 
+    WHERE name LIKE :searchQuery 
+    ORDER BY 
+        CASE WHEN :sortCode = 1 THEN name END ASC,
+        CASE WHEN :sortCode = 2 THEN name END DESC,
+        CASE WHEN :sortCode = 0 THEN id END ASC
+    """)
+    fun searchAndSortUsers(searchQuery: String, sortCode: Int): LiveData<List<UserEntity>>
 }

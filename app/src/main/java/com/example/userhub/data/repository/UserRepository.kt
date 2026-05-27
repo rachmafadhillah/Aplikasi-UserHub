@@ -50,6 +50,11 @@ class UserRepository private constructor(
         return userDao.searchUsers(searchQuery).map { Result.Success(it) }
     }
 
+    fun searchAndSortLocalUsers(query: String, sortCode: Int): LiveData<Result<List<UserEntity>>> {
+        val searchQuery = "%$query%"
+        return userDao.searchAndSortUsers(searchQuery, sortCode).map { Result.Success(it) }
+    }
+
     companion object {
         @Volatile
         private var instance: UserRepository? = null

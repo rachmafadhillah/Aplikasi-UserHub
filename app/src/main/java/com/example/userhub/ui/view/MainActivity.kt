@@ -2,6 +2,7 @@ package com.example.userhub.ui.view
 
 import android.os.Bundle
 import android.view.View
+import android.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
 import android.widget.Toast
 import com.example.userhub.data.Result
@@ -39,7 +40,6 @@ class MainActivity : AppCompatActivity() {
             adapter = userAdapter
         }
 
-        // 1. Ubah pengamatan ke liveData 'userResult' milik ViewModel
         mainViewModel.userResult.observe(this) { result ->
             if (result != null) {
                 when (result) {
@@ -50,7 +50,10 @@ class MainActivity : AppCompatActivity() {
                     is Result.Success -> {
                         binding.progressIndicator.visibility = View.GONE
                         val userData = result.data
-                        userAdapter.submitList(userData)
+
+                        userAdapter.submitList(userData) {
+                            binding.rvUser.scrollToPosition(0)
+                        }
                     }
 
                     is Result.Error -> {
@@ -65,6 +68,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        mainViewModel.refreshUsers().observe(this) { }
         mainViewModel.setSearchQuery("")
 
         binding.searchUser.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -78,5 +82,38 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
         })
+
+        binding.btnSort.setOnClickListener { view ->
+            showSortPopupMenu(view)
+        }
+    }
+
+    private fun showSortPopupMenu(view: View) {
+        val popup = PopupMenu(this, view)
+        popup.menu.add(0, 0, 0, "Default")
+        popup.menu.add(0, 1, 1, "Nama: A ke Z")
+        popup.menu.add(0, 2, 2, "Nama: Z ke A")
+
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                0 -> {
+                    mainViewModel.setSortOrder(0)
+                    Toast.makeText(this, "Kembali ke urutan default", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                1 -> {
+                    mainViewModel.setSortOrder(1)
+                    Toast.makeText(this, "Diurutkan A-Z", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                2 -> {
+                    mainViewModel.setSortOrder(2)
+                    Toast.makeText(this, "Diurutkan Z-A", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                else -> false
+            }
+        }
+        popup.show()
     }
 }
