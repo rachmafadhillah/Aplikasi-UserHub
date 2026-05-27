@@ -45,6 +45,11 @@ class UserRepository private constructor(
         emitSource(localData)
     }
 
+    fun searchLocalUsers(query: String): LiveData<Result<List<UserEntity>>> {
+        val searchQuery = "%$query%"
+        return userDao.searchUsers(searchQuery).map { Result.Success(it) }
+    }
+
     companion object {
         @Volatile
         private var instance: UserRepository? = null

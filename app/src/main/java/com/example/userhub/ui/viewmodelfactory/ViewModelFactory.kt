@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.userhub.data.repository.UserRepository
 import com.example.userhub.di.Injection
-import com.example.userhub.ui.MainViewModel
+import com.example.userhub.ui.viewmodel.MainViewModel
 
 class ViewModelFactory private constructor(private val userRepository: UserRepository) :
     ViewModelProvider.NewInstanceFactory() {

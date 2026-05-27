@@ -14,4 +14,7 @@ interface UserDao {
 
     @Query("DELETE FROM user")
     suspend fun deleteAll()
+
+    @Query("SELECT * FROM user WHERE name LIKE :searchQuery")
+    fun searchUsers(searchQuery: String): LiveData<List<UserEntity>>
 }
