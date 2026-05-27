@@ -11,15 +11,14 @@ import com.example.userhub.data.repository.UserRepository
 class MainViewModel(private val userRepository: UserRepository) : ViewModel() {
 
     private val _searchQuery = MutableLiveData<String>()
-
     private val _sortOrder = MutableLiveData<Int>(0)
+
+    private val _cityFilter = MutableLiveData<String>("")
 
     val userResult: LiveData<Result<List<UserEntity>>> = _searchQuery.switchMap { query ->
         _sortOrder.switchMap { sortCode ->
-            if (query.isNullOrEmpty()) {
-                userRepository.searchAndSortLocalUsers("", sortCode)
-            } else {
-                userRepository.searchAndSortLocalUsers(query, sortCode)
+            _cityFilter.switchMap { city ->
+                userRepository.searchSortAndFilterLocalUsers(query.orEmpty(), sortCode, city)
             }
         }
     }
@@ -31,6 +30,12 @@ class MainViewModel(private val userRepository: UserRepository) : ViewModel() {
     fun setSortOrder(sortCode: Int) {
         _sortOrder.value = sortCode
     }
+
+    fun setCityFilter(city: String) {
+        _cityFilter.value = city
+    }
+
+    val cities: LiveData<List<String>> = userRepository.getUniqueCities()
 
     fun refreshUsers() = userRepository.getUsers()
 }

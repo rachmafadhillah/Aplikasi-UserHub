@@ -21,10 +21,14 @@ interface UserDao {
     @Query("""
     SELECT * FROM user 
     WHERE name LIKE :searchQuery 
+    AND (:cityFilter = '' OR city = :cityFilter)
     ORDER BY 
         CASE WHEN :sortCode = 1 THEN name END ASC,
         CASE WHEN :sortCode = 2 THEN name END DESC,
         CASE WHEN :sortCode = 0 THEN id END ASC
     """)
-    fun searchAndSortUsers(searchQuery: String, sortCode: Int): LiveData<List<UserEntity>>
+    fun searchSortAndFilterUsers(searchQuery: String, sortCode: Int, cityFilter: String): LiveData<List<UserEntity>>
+
+    @Query("SELECT DISTINCT city FROM user ORDER BY city ASC")
+    fun getUniqueCities(): LiveData<List<String>>
 }
