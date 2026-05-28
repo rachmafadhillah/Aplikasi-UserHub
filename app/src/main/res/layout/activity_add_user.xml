@@ -112,7 +112,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/cityEditTextLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -126,13 +126,16 @@
                 app:startIconDrawable="@drawable/mdi_city"
                 app:startIconTint="@color/text_secondary">
 
-                <com.google.android.material.textfield.TextInputEditText
+                <AutoCompleteTextView
                     android:id="@+id/edCity"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins_regular"
-                    android:inputType="text"
-                    android:textSize="14sp" />
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:inputType="none"
+                    android:textSize="14sp"
+                    android:popupBackground="@drawable/bg_dropdown_popup" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -210,7 +213,7 @@
         android:fontFamily="@font/poppins_semibold"
         android:text="@string/save"
         android:textSize="15sp"
-        app:backgroundTint="@color/primary_dark"
+        app:backgroundTint="@color/accent_teal"
         app:cornerRadius="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -7,6 +7,7 @@ import androidx.lifecycle.switchMap
 import com.example.userhub.data.Result
 import com.example.userhub.data.local.entity.UserEntity
 import com.example.userhub.data.repository.UserRepository
+import com.example.userhub.data.response.CityResponseItem
 
 class MainViewModel(private val userRepository: UserRepository) : ViewModel() {
 
@@ -35,7 +36,13 @@ class MainViewModel(private val userRepository: UserRepository) : ViewModel() {
         _cityFilter.value = city
     }
 
-    val cities: LiveData<List<String>> = userRepository.getUniqueCities()
+    fun fetchCitiesFromApi(): LiveData<Result<List<CityResponseItem>>> {
+        return userRepository.getCitiesRemote()
+    }
 
     fun refreshUsers() = userRepository.getUsers()
+
+    fun getUniqueCitiesLocal(): LiveData<List<String>> {
+        return userRepository.getCitiesFromCache()
+    }
 }

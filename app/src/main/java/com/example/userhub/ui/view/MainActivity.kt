@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.userhub.R
 import com.example.userhub.databinding.ActivityMainBinding
 import com.example.userhub.data.Result
+import com.example.userhub.data.response.CityResponseItem
 import com.example.userhub.databinding.LayoutBottomSheetMenuBinding
 import com.example.userhub.ui.viewmodel.MainViewModel
 import com.example.userhub.ui.adapter.UserAdapter
@@ -32,7 +33,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val mainViewModel: MainViewModel by viewModels { ViewModelFactory.getInstance(this) }
     private lateinit var userAdapter: UserAdapter
-    private var availableCities: List<String> = listOf()
+    private var availableCityNames: List<String> = listOf()
     private lateinit var connectivityManager: ConnectivityManager
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
 
@@ -49,20 +50,32 @@ class MainActivity : AppCompatActivity() {
 
         mainViewModel.refreshUsers().observe(this) {}
         mainViewModel.setSearchQuery("")
+
+        loadCities()
     }
 
-    private fun setupWindowStyle() {
-        supportActionBar?.hide()
-        @Suppress("DEPRECATION")
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-    }
-
-    private fun setupRecyclerView() {
-        userAdapter = UserAdapter()
-        binding.rvUser.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
-            setHasFixedSize(true)
-            adapter = userAdapter
+    private fun loadCities() {
+        mainViewModel.fetchCitiesFromApi().observe(this) { result ->
+            if (result != null) {
+                when (result) {
+                    is Result.Loading -> {
+                        binding.btnFilter.isEnabled = false
+                    }
+                    is Result.Success -> {
+                        binding.btnFilter.isEnabled = true
+                        availableCityNames = result.data.map { it.name }
+                    }
+                    is Result.Error -> {
+                        binding.btnFilter.isEnabled = true
+                        // 💡 PERBAIKAN: Jika dari awal offline, langsung amankan data dari Room Database ke dalam memory
+                        mainViewModel.getUniqueCitiesLocal().observe(this) { localCities ->
+                            if (!localCities.isNullOrEmpty()) {
+                                availableCityNames = localCities
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -87,16 +100,24 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
 
-        mainViewModel.cities.observe(this) { cities ->
-            if (cities != null) {
-                availableCities = cities
-            }
+    private fun setupWindowStyle() {
+        supportActionBar?.hide()
+        @Suppress("DEPRECATION")
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+    }
+
+    private fun setupRecyclerView() {
+        userAdapter = UserAdapter()
+        binding.rvUser.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            setHasFixedSize(true)
+            adapter = userAdapter
         }
     }
 
     private fun setupActionListeners() {
-        // Input Pencarian
         binding.searchUser.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 mainViewModel.setSearchQuery(query.orEmpty())
@@ -120,19 +141,24 @@ class MainActivity : AppCompatActivity() {
 
         // Tombol Filter Kota
         binding.btnFilter.setOnClickListener {
-            val filterOptions = mutableListOf("Semua Kota")
-            filterOptions.addAll(availableCities)
-            showCustomBottomSheet("Filter Berdasarkan Kota", filterOptions) { index, optionText ->
-                if (index == 0) {
-                    mainViewModel.setCityFilter("")
-                    setButtonActiveState(binding.btnFilter, false)
-                    binding.btnFilter.text = "Filter Kota"
-                } else {
-                    mainViewModel.setCityFilter(optionText)
-                    setButtonActiveState(binding.btnFilter, true)
-                    binding.btnFilter.text = "Kota: $optionText"
+            mainViewModel.fetchCitiesFromApi().observe(this) { result ->
+                if (result != null) {
+                    when (result) {
+                        is Result.Loading -> {
+                            binding.progressIndicator.visibility = View.VISIBLE
+                        }
+                        is Result.Success -> {
+                            binding.progressIndicator.visibility = View.GONE
+                            availableCityNames = result.data.map { it.name }
+                            openFilterBottomSheet(availableCityNames)
+                        }
+                        is Result.Error -> {
+                            binding.progressIndicator.visibility = View.GONE
+                            // 💡 PERBAIKAN UTAMA: Jika offline, langsung hit data riil dari LiveData Room Database
+                            openOfflineFilterFallback()
+                        }
+                    }
                 }
-                Toast.makeText(this, "Filter: $optionText", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -143,13 +169,40 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun openOfflineFilterFallback() {
+        // 💡 PERBAIKAN: Selalu amati database Room secara langsung untuk memastikan data segar terbaca dari SQLite
+        mainViewModel.getUniqueCitiesLocal().observe(this) { localCities ->
+            if (!localCities.isNullOrEmpty()) {
+                availableCityNames = localCities
+                openFilterBottomSheet(availableCityNames)
+            } else {
+                Toast.makeText(this, "Gagal memuat filter. Cache lokal kosong.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun openFilterBottomSheet(cities: List<String>) {
+        val filterOptions = mutableListOf("Semua Kota")
+        filterOptions.addAll(cities)
+
+        showCustomBottomSheet("Filter Berdasarkan Kota", filterOptions) { index, optionText ->
+            if (index == 0) {
+                mainViewModel.setCityFilter("")
+                setButtonActiveState(binding.btnFilter, false)
+                binding.btnFilter.text = "Filter Kota"
+            } else {
+                mainViewModel.setCityFilter(optionText)
+                setButtonActiveState(binding.btnFilter, true)
+                binding.btnFilter.text = "Kota: $optionText"
+            }
+            Toast.makeText(this, "Filter: $optionText", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun setupNetworkObserver() {
         connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-        val activeNetwork = connectivityManager.activeNetwork
-        val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork)
-        val isInitialOnline = capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
-
+        val isInitialOnline = isCurrentlyOnline()
         binding.tvOfflineBanner.visibility = if (isInitialOnline) View.GONE else View.VISIBLE
 
         networkCallback = object : ConnectivityManager.NetworkCallback() {
@@ -163,7 +216,11 @@ class MainActivity : AppCompatActivity() {
             override fun onLost(network: Network) {
                 super.onLost(network)
                 runOnUiThread {
-                    binding.tvOfflineBanner.visibility = View.VISIBLE
+                    if (!isCurrentlyOnline()) {
+                        binding.tvOfflineBanner.visibility = View.VISIBLE
+                    } else {
+                        binding.tvOfflineBanner.visibility = View.GONE
+                    }
                 }
             }
         }
@@ -173,6 +230,12 @@ class MainActivity : AppCompatActivity() {
             .build()
 
         connectivityManager.registerNetworkCallback(request, networkCallback)
+    }
+
+    private fun isCurrentlyOnline(): Boolean {
+        val activeNetwork = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
     private fun showCustomBottomSheet(title: String, options: List<String>, onSelected: (index: Int, text: String) -> Unit) {

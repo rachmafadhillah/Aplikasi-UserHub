@@ -5,9 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.map
 import com.example.userhub.data.Result
+import com.example.userhub.data.local.entity.CityEntity
 import com.example.userhub.data.retrofit.ApiService
 import com.example.userhub.data.local.entity.UserEntity
 import com.example.userhub.data.local.room.UserDao
+import com.example.userhub.data.response.CityResponseItem
 import com.example.userhub.data.response.UserResponseItem
 import kotlinx.coroutines.Dispatchers
 
@@ -53,10 +55,6 @@ class UserRepository private constructor(
             .map { Result.Success(it) }
     }
 
-    fun getUniqueCities(): LiveData<List<String>> {
-        return userDao.getUniqueCities()
-    }
-
     fun insertUser(user: UserResponseItem): LiveData<Result<UserEntity>> = liveData(Dispatchers.IO) {
         emit(Result.Loading)
         try {
@@ -79,6 +77,36 @@ class UserRepository private constructor(
             Log.e("UserRepository", "insertUser Error: ${e.message}")
             emit(Result.Error(e.message.toString()))
         }
+    }
+
+    fun getCitiesRemote(): LiveData<Result<List<CityResponseItem>>> = liveData(Dispatchers.IO) {
+        emit(Result.Loading)
+        try {
+            val response = apiService.getCitiesFromApi()
+
+            // Konversikan data API menjadi CityEntity untuk disimpan ke database
+            val cityEntities = response.map { cityResponseItem ->
+                CityEntity(
+                    id = cityResponseItem.id,
+                    name = cityResponseItem.name
+                )
+            }
+
+            // Bersihkan cache lama dan masukkan cache baru
+            userDao.deleteAllCities()
+            userDao.insertCities(cityEntities)
+
+            emit(Result.Success(response))
+        } catch (e: Exception) {
+            Log.e("UserRepository", "Gagal mengambil kota dari API, menggunakan cache lokal: ${e.message}")
+            // Pancarkan status error agar UI tahu bahwa server tidak bisa dijangkau
+            emit(Result.Error(e.message ?: "Terjadi kesalahan jaringan"))
+        }
+    }
+
+    // 💡 Tambahkan fungsi baru ini untuk dibaca AddUserActivity saat offline
+    fun getCitiesFromCache(): LiveData<List<String>> {
+        return userDao.getCachedCities()
     }
 
     companion object {

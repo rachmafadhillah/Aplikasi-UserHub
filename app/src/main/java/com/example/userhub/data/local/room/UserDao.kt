@@ -2,6 +2,7 @@ package com.example.userhub.data.local.room
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.example.userhub.data.local.entity.CityEntity
 import com.example.userhub.data.local.entity.UserEntity
 
 @Dao
@@ -29,7 +30,13 @@ interface UserDao {
     """)
     fun searchSortAndFilterUsers(searchQuery: String, sortCode: Int, cityFilter: String): LiveData<List<UserEntity>>
 
-    @Query("SELECT DISTINCT city FROM user ORDER BY city ASC")
-    fun getUniqueCities(): LiveData<List<String>>
+    @Query("SELECT name FROM city_cache ORDER BY name ASC")
+    fun getCachedCities(): LiveData<List<String>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCities(cities: List<CityEntity>)
+
+    @Query("DELETE FROM city_cache")
+    suspend fun deleteAllCities()
 
 }

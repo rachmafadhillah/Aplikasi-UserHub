@@ -5,9 +5,12 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.example.userhub.R
 import com.example.userhub.data.Result
 import com.example.userhub.data.response.UserResponseItem
 import com.example.userhub.databinding.ActivityAddUserBinding
@@ -28,7 +31,54 @@ class AddUserActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupToolbar()
+        setupCityDropdown()
         setupActionListeners()
+    }
+
+    private fun setupCityDropdown() {
+        addUserViewModel.fetchCitiesFromApi().observe(this) { result ->
+            if (result != null) {
+                when (result) {
+                    is Result.Loading -> {
+                        binding.cityEditTextLayout.hint = "Loading cities..."
+                        binding.edCity.isEnabled = false
+                    }
+                    is Result.Success -> {
+                        binding.cityEditTextLayout.hint = getString(R.string.city)
+                        binding.edCity.isEnabled = true
+                        val cityList = result.data.map { it.name }
+                        setDropdownAdapter(cityList)
+                    }
+                    is Result.Error -> {
+                        loadLocalCitiesFallback()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun loadLocalCitiesFallback() {
+        addUserViewModel.getUniqueCitiesLocal().observe(this) { localCities ->
+            binding.cityEditTextLayout.hint = getString(R.string.city)
+            binding.edCity.isEnabled = true
+
+            if (!localCities.isNullOrEmpty()) {
+                setDropdownAdapter(localCities)
+                Toast.makeText(this, "Mode Offline: Memuat kota dari cache.", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Cache kota lokal kosong. Hubungkan ke internet terlebih dahulu.", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun setDropdownAdapter(cities: List<String>) {
+        val adapter = ArrayAdapter(
+            this,
+            R.layout.item_dropdown_city,
+            cities
+        )
+        val cityAutoComplete = binding.edCity as? AutoCompleteTextView
+        cityAutoComplete?.setAdapter(adapter)
     }
 
     private fun setupToolbar() {
