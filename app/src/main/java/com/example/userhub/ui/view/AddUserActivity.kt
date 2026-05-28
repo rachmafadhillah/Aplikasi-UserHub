@@ -36,7 +36,7 @@ class AddUserActivity : AppCompatActivity() {
         supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             setDisplayShowTitleEnabled(true)
-            title = "Add New User"
+            title = "Tambah User Baru"
         }
 
         binding.materialBarDetail.setNavigationOnClickListener {

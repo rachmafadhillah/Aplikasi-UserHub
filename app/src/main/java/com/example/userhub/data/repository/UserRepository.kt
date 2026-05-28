@@ -43,11 +43,6 @@ class UserRepository private constructor(
         emitSource(localData)
     }
 
-    fun searchLocalUsers(query: String): LiveData<Result<List<UserEntity>>> {
-        val searchQuery = "%$query%"
-        return userDao.searchUsers(searchQuery).map { Result.Success(it) }
-    }
-
     fun searchSortAndFilterLocalUsers(
         query: String,
         sortCode: Int,

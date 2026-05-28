@@ -45,7 +45,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvOfflineBanner"
         app:queryBackground="@null"
-        app:queryHint="Cari nama pengguna..." />
+        app:queryHint="@string/search_user" />
 
     <LinearLayout
         android:id="@+id/layoutActions"
@@ -67,7 +67,7 @@
             android:layout_height="40dp"
             android:layout_marginEnd="8dp"
             android:fontFamily="@font/poppins_medium"
-            android:text="Urutkan"
+            android:text="@string/sort"
             android:textAllCaps="false"
             android:textColor="@color/text_secondary"
             android:textSize="12sp"
@@ -83,7 +83,7 @@
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:fontFamily="@font/poppins_medium"
-            android:text="Filter Kota"
+            android:text="@string/filter"
             android:textAllCaps="false"
             android:textColor="@color/text_secondary"
             android:textSize="12sp"
@@ -123,7 +123,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
-        android:text="Tambah User"
+        android:text="@string/add_user"
         android:textColor="@color/white"
         android:fontFamily="@font/poppins_semibold"
         app:icon="@android:drawable/ic_input_add"

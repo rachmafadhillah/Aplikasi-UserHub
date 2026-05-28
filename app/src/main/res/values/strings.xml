@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">UserHub</string>
+    <string name="add_new_user">Tambah Pengguna Baru</string>
+    <string name="username">Nama Pengguna</string>
+    <string name="email">Alamat Email</string>
+    <string name="phone_number">Nomor Telepon</string>
+    <string name="address">Alamat Lengkap</string>
+    <string name="city">Kota</string>
+    <string name="gender">Pilih Jenis Kelamin</string>
+    <string name="male">Laki-laki</string>
+    <string name="female">Perempuan</string>
+    <string name="save">Simpan</string>
+    <string name="sort">Urutkan</string>
+    <string name="filter">Filter Kota</string>
+    <string name="search_user">Cari nama pengguna...</string>
+    <string name="add_user">Tambah User</string>
+    <string name="phone_detail">Nomor Telepon: 0849098434</string>
+    <string name="address_detail">Alamat: Tangerang</string>
+    <string name="gender_detail">Jenis Kelamin: Male</string>
 </resources>

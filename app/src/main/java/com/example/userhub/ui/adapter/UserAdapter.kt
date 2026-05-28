@@ -37,15 +37,14 @@ class UserAdapter : ListAdapter<UserEntity, UserAdapter.MyViewHolder>(DIFF_CALLB
     }
 
     class MyViewHolder(val binding: ItemUserBinding) : RecyclerView.ViewHolder(binding.root) {
-        // 👈 Ganti tipe data parameter dari UserResponseItem menjadi UserEntity
         fun bind(data: UserEntity, isExpanded: Boolean) {
             binding.tvUsername.text = data.name
             binding.tvEmail.text = data.email
             binding.tvCity.text = data.city
 
-            binding.tvPhone.text = "Phone: ${data.phoneNumber}"
-            binding.tvAddress.text = "Address: ${data.address}"
-            binding.tvGender.text = "Gender: ${if (data.gender == 0) "Male" else "Female"}"
+            binding.tvPhone.text = "Nomor Telepon: ${data.phoneNumber}"
+            binding.tvAddress.text = "Alamat: ${data.address}"
+            binding.tvGender.text = "Jenis Kelamin: ${if (data.gender == 0) "Laki-Laki" else "Perempuan"}"
 
             binding.layoutDetailExpand.visibility = if (isExpanded) View.VISIBLE else View.GONE
 

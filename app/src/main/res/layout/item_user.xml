@@ -31,7 +31,7 @@
             android:ellipsize="end"
             android:fontFamily="@font/poppins_semibold"
             android:maxLines="1"
-            android:text="Username"
+            android:text="@string/username"
             android:textSize="14sp"
             app:layout_constraintEnd_toStartOf="@+id/show"
             app:layout_constraintStart_toStartOf="parent"
@@ -45,7 +45,7 @@
             android:ellipsize="end"
             android:fontFamily="@font/poppins_regular"
             android:maxLines="1"
-            android:text="Email"
+            android:text="@string/email"
             android:textSize="12sp"
             app:layout_constraintEnd_toStartOf="@+id/show"
             app:layout_constraintStart_toStartOf="parent"
@@ -59,7 +59,7 @@
             android:ellipsize="end"
             android:fontFamily="@font/poppins_regular"
             android:maxLines="1"
-            android:text="City"
+            android:text="@string/city"
             android:textSize="12sp"
             app:layout_constraintEnd_toStartOf="@+id/show"
             app:layout_constraintStart_toStartOf="parent"
@@ -89,7 +89,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/poppins_regular"
-                android:text="Phone: 0849098434"
+                android:text="@string/phone_detail"
                 android:textSize="12sp"
                 app:layout_constraintTop_toBottomOf="@id/divider" />
 
@@ -99,7 +99,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:fontFamily="@font/poppins_regular"
-                android:text="Address: Tangerang"
+                android:text="@string/address_detail"
                 android:textSize="12sp"
                 app:layout_constraintTop_toBottomOf="@id/tvPhone" />
 
@@ -109,7 +109,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:fontFamily="@font/poppins_regular"
-                android:text="Gender: Male"
+                android:text="@string/gender_detail"
                 android:textSize="12sp"
                 app:layout_constraintTop_toBottomOf="@id/tvAddress" />
 
