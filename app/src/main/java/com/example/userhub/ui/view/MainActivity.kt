@@ -144,7 +144,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Tombol Filter Kota
         binding.btnFilter.setOnClickListener {
             mainViewModel.fetchCitiesFromApi().observe(this) { result ->
                 if (result != null) {
@@ -159,7 +158,6 @@ class MainActivity : AppCompatActivity() {
                         }
                         is Result.Error -> {
                             binding.progressIndicator.visibility = View.GONE
-                            // 💡 PERBAIKAN UTAMA: Jika offline, langsung hit data riil dari LiveData Room Database
                             openOfflineFilterFallback()
                         }
                     }
@@ -172,10 +170,17 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("EXTRA_GENDER_DEFAULT", 0)
             startActivity(intent)
         }
+
+        binding.searchUser.setOnQueryTextFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                binding.fabAddUser.hide()
+            } else {
+                binding.fabAddUser.show()
+            }
+        }
     }
 
     private fun openOfflineFilterFallback() {
-        // 💡 PERBAIKAN: Selalu amati database Room secara langsung untuk memastikan data segar terbaca dari SQLite
         mainViewModel.getUniqueCitiesLocal().observe(this) { localCities ->
             if (!localCities.isNullOrEmpty()) {
                 availableCityNames = localCities
