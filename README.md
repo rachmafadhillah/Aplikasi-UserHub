@@ -74,6 +74,6 @@ Arsitektur visual dan komponen antarmuka di dalam aplikasi ini dirancang berdasa
 
 ## 📱 Tampilan Aplikasi
 
-| Main Screen (Daftar User) | Mode Offline (Koneksi Terputus) | Tambah User Baru |
+| Main Screen (Daftar User) | Mode Offline (Koneksi Terputus) | Tambah User Baru | Sort dan Filter |
 | :---: | :---: | :---: |
 | <img width="392" height="829" alt="Image" src="https://github.com/user-attachments/assets/923bac88-c37d-4589-8a2e-c73a1cced2a6" /> | <img width="391" height="830" alt="Image" src="https://github.com/user-attachments/assets/5541d69d-0889-48f8-bc19-4686e9d72d38" /> | <img width="393" height="833" alt="Image" src="https://github.com/user-attachments/assets/33501afd-3fad-4c85-80cc-1193135f6f94" /> | <img width="390" height="836" alt="Image" src="https://github.com/user-attachments/assets/6c4b88f2-75a0-466d-8538-178e545396fc" />
