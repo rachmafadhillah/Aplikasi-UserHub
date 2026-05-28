@@ -31,7 +31,7 @@ Proyek ini dibangun menggunakan pustaka standar industri (Android Jetpack) yang 
 ### B. Langkah Menjalankan Proyek
 1. *Clone* atau unduh repositori proyek UserHub ini.
 2. Buka Android Studio, pilih **File > Open**, lalu arahkan ke folder proyek.
-3. Tunggu proses **Gradle Sync** selesai mengunduh semua dependensi (`Room`, `Retrofit`, `Glide`, dsb).
+3. Tunggu proses **Gradle Sync** selesai mengunduh semua dependensi (`Room`, `Retrofit`, dsb).
 4. Hubungkan perangkat Android lewat kabel USB (pastikan *USB Debugging* aktif).
 5. Klik ikon **Run 'app'** (tombol segitiga hijau) di bagian toolbar atas Android Studio.
 
