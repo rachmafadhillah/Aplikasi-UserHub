@@ -69,3 +69,11 @@ Arsitektur visual dan komponen antarmuka di dalam aplikasi ini dirancang berdasa
 ### F. Pencegahan Galat & Efisiensi Pesan Mikro (Error Prevention)
 * **Alasan Desain (`AddUserActivity.kt`):** Di halaman formulir, jika sistem mendeteksi perangkat sedang terputus dari internet via fungsi `isOnline()`, aplikasi langsung memotong proses pengiriman dan memunculkan notifikasi singkat: `"Koneksi terputus, gagal menyimpan data."`
 * **Prinsip Microcopy:** Kalimat 5 kata ini langsung menembak akar masalah (Koneksi terputus) dan dampaknya (Gagal menyimpan) secara kilat (*fast scanning*) tanpa kata-kata instruksi yang bertele-tele. Strategi ini melatih aplikasi untuk mencegah *thread request* sia-sia ke server yang dapat menguras baterai dan memicu error *timeout* yang lama bagi pengguna.
+
+---
+
+## 📱 Tampilan Aplikasi
+
+| Main Screen (Daftar User) | Mode Offline (Koneksi Terputus) | Tambah User Baru |
+| :---: | :---: | :---: |
+| <img width="250" alt="Main Screen" src="https://github.com/user-attachments/assets/952f59d6-1824-4e09-8cc2-897c386bcd2f" /> | <img width="250" alt="Offline Mode" src="https://github.com/user-attachments/assets/fcef42b9-75ab-4a6a-9034-b74501e08ee5" /> | <img width="250" alt="Add User" src="https://github.com/user-attachments/assets/0032281c-0000-4589-b62c-96e48564b199" /> |
