@@ -84,7 +84,6 @@ class UserRepository private constructor(
         try {
             val response = apiService.getCitiesFromApi()
 
-            // Konversikan data API menjadi CityEntity untuk disimpan ke database
             val cityEntities = response.map { cityResponseItem ->
                 CityEntity(
                     id = cityResponseItem.id,
@@ -92,19 +91,16 @@ class UserRepository private constructor(
                 )
             }
 
-            // Bersihkan cache lama dan masukkan cache baru
             userDao.deleteAllCities()
             userDao.insertCities(cityEntities)
 
             emit(Result.Success(response))
         } catch (e: Exception) {
             Log.e("UserRepository", "Gagal mengambil kota dari API, menggunakan cache lokal: ${e.message}")
-            // Pancarkan status error agar UI tahu bahwa server tidak bisa dijangkau
             emit(Result.Error(e.message ?: "Terjadi kesalahan jaringan"))
         }
     }
 
-    // 💡 Tambahkan fungsi baru ini untuk dibaca AddUserActivity saat offline
     fun getCitiesFromCache(): LiveData<List<String>> {
         return userDao.getCachedCities()
     }
