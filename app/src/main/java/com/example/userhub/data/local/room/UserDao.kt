@@ -31,4 +31,5 @@ interface UserDao {
 
     @Query("SELECT DISTINCT city FROM user ORDER BY city ASC")
     fun getUniqueCities(): LiveData<List<String>>
+
 }

@@ -8,6 +8,7 @@ import com.example.userhub.data.Result
 import com.example.userhub.data.retrofit.ApiService
 import com.example.userhub.data.local.entity.UserEntity
 import com.example.userhub.data.local.room.UserDao
+import com.example.userhub.data.response.UserResponseItem
 import kotlinx.coroutines.Dispatchers
 
 class UserRepository private constructor(
@@ -20,7 +21,6 @@ class UserRepository private constructor(
 
         try {
             val response = apiService.getUser()
-
             val userList = response.map { userResponseItem ->
                 UserEntity(
                     id = userResponseItem.id,
@@ -32,13 +32,11 @@ class UserRepository private constructor(
                     gender = userResponseItem.gender
                 )
             }
-
             userDao.deleteAll()
             userDao.insertUsers(userList)
 
         } catch (e: Exception) {
-            Log.e("UserRepository", "getUsers Remote Error: ${e.message}")
-            emit(Result.Error(e.message.toString()))
+            Log.e("UserRepository", "Internet offline, memuat data lokal cache: ${e.message}")
         }
 
         val localData: LiveData<Result<List<UserEntity>>> = userDao.getUser().map { Result.Success(it) }
@@ -50,13 +48,42 @@ class UserRepository private constructor(
         return userDao.searchUsers(searchQuery).map { Result.Success(it) }
     }
 
-    fun searchSortAndFilterLocalUsers(query: String, sortCode: Int, cityFilter: String): LiveData<Result<List<UserEntity>>> {
+    fun searchSortAndFilterLocalUsers(
+        query: String,
+        sortCode: Int,
+        cityFilter: String
+    ): LiveData<Result<List<UserEntity>>> {
         val searchQuery = "%$query%"
-        return userDao.searchSortAndFilterUsers(searchQuery, sortCode, cityFilter).map { Result.Success(it) }
+        return userDao.searchSortAndFilterUsers(searchQuery, sortCode, cityFilter)
+            .map { Result.Success(it) }
     }
 
     fun getUniqueCities(): LiveData<List<String>> {
         return userDao.getUniqueCities()
+    }
+
+    fun insertUser(user: UserResponseItem): LiveData<Result<UserEntity>> = liveData(Dispatchers.IO) {
+        emit(Result.Loading)
+        try {
+            val remoteUser = apiService.addUser(user)
+
+            val localUser = UserEntity(
+                id = remoteUser.id,
+                name = remoteUser.name,
+                email = remoteUser.email,
+                city = remoteUser.city,
+                address = remoteUser.address,
+                phoneNumber = remoteUser.phoneNumber,
+                gender = remoteUser.gender
+            )
+
+            userDao.insertUsers(listOf(localUser))
+
+            emit(Result.Success(localUser))
+        } catch (e: Exception) {
+            Log.e("UserRepository", "insertUser Error: ${e.message}")
+            emit(Result.Error(e.message.toString()))
+        }
     }
 
     companion object {

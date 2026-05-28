@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.userhub.data.repository.UserRepository
 import com.example.userhub.di.Injection
+import com.example.userhub.ui.viewmodel.AddUserViewModel
 import com.example.userhub.ui.viewmodel.MainViewModel
 
 class ViewModelFactory private constructor(private val userRepository: UserRepository) :
@@ -13,6 +14,9 @@ class ViewModelFactory private constructor(private val userRepository: UserRepos
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
             return MainViewModel(userRepository) as T
+        }
+        if (modelClass.isAssignableFrom(AddUserViewModel::class.java)) {
+            return AddUserViewModel(userRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
     }

@@ -9,4 +9,9 @@ interface ApiService {
     @GET("user")
     suspend fun getUser(
     ): List<UserResponseItem>
+
+    @POST("user")
+    suspend fun addUser(
+        @Body user: UserResponseItem
+    ): UserResponseItem
 }

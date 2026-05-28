@@ -120,6 +120,12 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Filter: $optionText", Toast.LENGTH_SHORT).show()
             }
         }
+
+        binding.fabAddUser.setOnClickListener {
+            val intent = Intent(this@MainActivity, AddUserActivity::class.java)
+            intent.putExtra("EXTRA_GENDER_DEFAULT", 0)
+            startActivity(intent)
+        }
     }
 
     private fun showCustomBottomSheet(title: String, options: List<String>, onSelected: (index: Int, text: String) -> Unit) {
@@ -138,9 +144,8 @@ class MainActivity : AppCompatActivity() {
                 setPadding(paddingPx, paddingPx, paddingPx, paddingPx)
 
                 text = optionText
-                textSize = 14f // Nilai float untuk ukuran sp
+                textSize = 14f
 
-                // 2 & 3. 💡 SOLUSI ERROR TYPEFACE: Gunakan properti 'typeface' bukan 'fontFamily'
                 typeface = resources.getFont(R.font.poppins_regular)
 
                 setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_secondary))
