@@ -1,6 +1,6 @@
 ﻿# UserHub Application 📱
 
-UserHub adalah aplikasi manajemen data pengguna (User Management) berbasis Android yang dirancang dengan arsitektur modern berorientasi performa *offline* (**Offline-First Architecture**). Aplikasi ini mengintegrasikan penyimpanan lokal (Room) sebagai sumber data utama di layar (*Single Source of Truth*) yang disinkronkan secara reaktif dengan REST API (Retrofit).
+UserHub adalah aplikasi manajemen data pengguna (User Management) berbasis Android yang dirancang dengan arsitektur modern berorientasi performa *offline*. Aplikasi ini mengintegrasikan penyimpanan lokal (Room) sebagai sumber data utama di layar yang disinkronkan secara reaktif dengan REST API (Retrofit).
 
 ---
 
