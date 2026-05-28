@@ -1,5 +1,8 @@
 package com.example.userhub.ui.view
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -11,7 +14,6 @@ import com.example.userhub.databinding.ActivityAddUserBinding
 import com.example.userhub.ui.viewmodel.AddUserViewModel
 import com.example.userhub.ui.viewmodelfactory.ViewModelFactory
 import java.util.UUID
-import kotlin.getValue
 
 class AddUserActivity : AppCompatActivity() {
 
@@ -25,12 +27,43 @@ class AddUserActivity : AppCompatActivity() {
         binding = ActivityAddUserBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Set up custom Toolbar M3
         setupToolbar()
+        setupActionListeners()
+    }
 
+    private fun setupToolbar() {
+        setSupportActionBar(binding.materialBarDetail)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setDisplayShowTitleEnabled(true)
+            title = "Add New User"
+        }
+
+        binding.materialBarDetail.setNavigationOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+    }
+
+    private fun setupActionListeners() {
         binding.btnSave.setOnClickListener {
+            if (!isOnline()) {
+                Toast.makeText(
+                    this,
+                    "Koneksi terputus, gagal menyimpan data.",
+                    Toast.LENGTH_LONG
+                ).show()
+                return@setOnClickListener
+            }
+
             saveUserData()
         }
+    }
+
+    private fun isOnline(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
     private fun saveUserData() {
@@ -39,7 +72,6 @@ class AddUserActivity : AppCompatActivity() {
         val address = binding.edAddress.text.toString().trim()
         val phoneNumber = binding.edPhone.text.toString().trim()
         val city = binding.edCity.text.toString().trim()
-
         val gender = if (binding.rbMale.isChecked) 0 else 1
 
         if (username.isEmpty() || email.isEmpty() || address.isEmpty() || phoneNumber.isEmpty() || city.isEmpty()) {
@@ -76,19 +108,6 @@ class AddUserActivity : AppCompatActivity() {
                     }
                 }
             }
-        }
-    }
-
-    private fun setupToolbar() {
-        setSupportActionBar(binding.materialBarDetail)
-        supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setDisplayShowTitleEnabled(true)
-            title = "Add New User"
-        }
-
-        binding.materialBarDetail.setNavigationOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
         }
     }
 }
